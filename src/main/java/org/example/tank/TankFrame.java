@@ -16,18 +16,44 @@ public class TankFrame extends Frame {
 //    private static int SPEED = 5; 这也是坦克的属性
     private Tank myTank;
     private Tank enemy;
-
+    private static int GAME_WIDTH = 800;
+    private static int GAME_HEIGHT = 600;
+    private Bullet bullet;
 
     public TankFrame(){
         this.setLocation(-900,100);
-        this.setSize(800,600);
+        this.setSize(GAME_WIDTH,GAME_HEIGHT);
         this.setVisible(true);
         // 增加键盘的监听
         this.addKeyListener(new TankKeyListener());
         // 初始化一辆坦克,这里不定义坦克的属性，是因为绘制坦克是坦克自己的行为
-        myTank = new Tank(100,100,Dir.R);
+        myTank = new Tank(100,100,Dir.R,Group.Good,this);
         // NPC敌人坦克
-        enemy = new Tank(200,200,Dir.D);
+        enemy = new Tank(200,200,Dir.D,Group.Bad,this);
+        bullet = new Bullet(100,100,Dir.D,Group.Bad);
+    }
+
+    Image offScreenImage = null;
+    /**
+     *@Author XiZhuangBaoTu
+     *@Description 解决双缓冲的问题
+     *@Date 02:24 2023/5/13
+     *@Param [g]
+     *@return void
+     **/
+    @Override
+    public void update(Graphics g) {
+        if (offScreenImage == null) {
+            offScreenImage = this.createImage(GAME_WIDTH,GAME_HEIGHT);
+        }
+        Graphics gOffScreen = offScreenImage.getGraphics();
+        Color c = gOffScreen.getColor();
+        gOffScreen.setColor(Color.BLACK);
+        gOffScreen.fillRect(0,0,GAME_WIDTH,GAME_HEIGHT);
+        gOffScreen.setColor(c);
+        paint(gOffScreen);
+        // 最后才一次性刷到内存中
+        g.drawImage(offScreenImage,0,0,null);
     }
 
     /**
@@ -43,7 +69,8 @@ public class TankFrame extends Frame {
 //       g.fillRect(x,y,50,50);
        // 坦克自己决定自己的模样
         myTank.paint(g);
-//        enemy.paint(g);
+        enemy.paint(g);
+        bullet.paint(g);
     }
 
 
@@ -65,4 +92,9 @@ public class TankFrame extends Frame {
             myTank.keyReleased(e);
         }
     }
+
+    public void addBullet(Bullet bullet){
+        this.bullet = bullet;
+    }
+
 }
