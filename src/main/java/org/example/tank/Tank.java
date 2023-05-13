@@ -24,20 +24,17 @@ public class Tank {
     private boolean moving;
     // 区分是敌人还是主战坦克
     private Group group;
-    // 接受frame，用来画子弹
-    private TankFrame tankFrame;
 
     public Tank(){
         this.x = 100;
         this.y = 100;
     }
 
-    public Tank(int x,int y,Dir dir,Group group,TankFrame tankFrame) {
+    public Tank(int x,int y,Dir dir,Group group) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.group = group;
-        this.tankFrame = tankFrame;
     }
 
     /**
@@ -181,6 +178,6 @@ public class Tank {
     }
 
     private void fire() {
-        tankFrame.addBullet(new Bullet(x,y,dir,group));
+        TankFrame.INSTANCE.addBullet(new Bullet(x,y,dir,group));
     }
 }

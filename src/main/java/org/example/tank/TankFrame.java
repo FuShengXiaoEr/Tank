@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
  * Version 1.0
  **/
 public class TankFrame extends Frame {
+    public static final TankFrame INSTANCE = new TankFrame();
 //    private int x = 100 ,y = 100; 因此这里就不要直接定义坦克的位置了，因为抽离除了坦克这个对象
 //    private static int SPEED = 5; 这也是坦克的属性
     private Tank myTank;
@@ -20,16 +21,16 @@ public class TankFrame extends Frame {
     private static int GAME_HEIGHT = 600;
     private Bullet bullet;
 
-    public TankFrame(){
+    private TankFrame(){
         this.setLocation(-900,100);
         this.setSize(GAME_WIDTH,GAME_HEIGHT);
         this.setVisible(true);
         // 增加键盘的监听
         this.addKeyListener(new TankKeyListener());
         // 初始化一辆坦克,这里不定义坦克的属性，是因为绘制坦克是坦克自己的行为
-        myTank = new Tank(100,100,Dir.R,Group.Good,this);
+        myTank = new Tank(100,100,Dir.R,Group.Good);
         // NPC敌人坦克
-        enemy = new Tank(200,200,Dir.D,Group.Bad,this);
+        enemy = new Tank(200,200,Dir.D,Group.Bad);
         bullet = new Bullet(100,100,Dir.D,Group.Bad);
     }
 
