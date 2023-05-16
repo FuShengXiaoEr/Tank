@@ -3,6 +3,8 @@ package org.example.tank;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @ClassName TankFram
@@ -12,27 +14,46 @@ import java.awt.event.KeyEvent;
  * Version 1.0
  **/
 public class TankFrame extends Frame {
-    public static final TankFrame INSTANCE = new TankFrame();
+//    public static final TankFrame INSTANCE = new TankFrame();
 //    private int x = 100 ,y = 100; 因此这里就不要直接定义坦克的位置了，因为抽离除了坦克这个对象
 //    private static int SPEED = 5; 这也是坦克的属性
-    private Tank myTank;
-    private Tank enemy;
-    private static int GAME_WIDTH = 800;
-    private static int GAME_HEIGHT = 600;
-    private Bullet bullet;
+    private PlayTank myTank;
+    private List<Tank> enemy;
+    public static int GAME_WIDTH = 800;
+    public static int GAME_HEIGHT = 600;
+    private List<Bullet> bullets;
+    public List<Explode> explodes = new ArrayList<>();
 
-    private TankFrame(){
+    public TankFrame(){
+        super("tank war");
         this.setLocation(-900,100);
         this.setSize(GAME_WIDTH,GAME_HEIGHT);
-        this.setVisible(true);
         // 增加键盘的监听
         this.addKeyListener(new TankKeyListener());
-        // 初始化一辆坦克,这里不定义坦克的属性，是因为绘制坦克是坦克自己的行为
-        myTank = new Tank(100,100,Dir.R,Group.Good);
-        // NPC敌人坦克
-        enemy = new Tank(200,200,Dir.D,Group.Bad);
-        bullet = new Bullet(100,100,Dir.D,Group.Bad);
+        initGameObjects();
     }
+
+    /**
+     *@Author XiZhuangBaoTu
+     *@Description 初始坦克对象
+     *@Date 01:07 2023/5/15
+     *@Param []
+     *@return void
+     **/
+    private void initGameObjects() {
+        // 初始化一辆坦克,这里不定义坦克的属性，是因为绘制坦克是坦克自己的行为
+        myTank = new PlayTank(100,100,Dir.R,Group.Good,this);
+        // NPC敌人坦克
+//        enemy = new Tank(200,200,Dir.D,Group.Bad,this);
+        enemy = new ArrayList<>();
+        bullets = new ArrayList<>();
+        explodes = new ArrayList<>();
+        int tankCount = Integer.parseInt(PropertyMgr.get("initTankCount"));
+        for (int i = 0; i < tankCount; i++) {
+            enemy.add(new Tank(100+50*i,200,Dir.D,Group.Bad,this));
+        }
+    }
+
 
     Image offScreenImage = null;
     /**
@@ -66,12 +87,45 @@ public class TankFrame extends Frame {
      **/
     @Override
     public void paint(Graphics g) {
+        Color c = g.getColor();
+        g.setColor(Color.WHITE);
+        g.drawString("bllutes:"+bullets.size(),10,60);
+        g.drawString("enemies:"+enemy.size(),10,80);
+        g.setColor(c);
 //        // 绘制方块
 //       g.fillRect(x,y,50,50);
        // 坦克自己决定自己的模样
         myTank.paint(g);
-        enemy.paint(g);
-        bullet.paint(g);
+
+        for (int i = 0; i < enemy.size(); i++) {
+            if (!enemy.get(i).isLive()) {
+                enemy.remove(i);
+            }else {
+                enemy.get(i).paint(g);
+            }
+        }
+        for (int i = 0;i < bullets.size(); i++) {
+            // 和敌机碰撞
+            for (int j = 0; j < enemy.size(); j++) {
+                bullets.get(i).collidesWithTank(enemy.get(j));
+            }
+            if (!bullets.get(i).isLive()) {
+                bullets.remove(i);
+            }else {
+                bullets.get(i).paint(g);
+            }
+        }
+        for (int i = 0; i < explodes.size(); i++) {
+            if (!explodes.get(i).isLive()) {
+                explodes.remove(i);
+            }else {
+                explodes.get(i).paint(g);
+            }
+        }
+    }
+
+    public void add(Explode explode) {
+        this.explodes.add(explode);
     }
 
 
@@ -95,7 +149,7 @@ public class TankFrame extends Frame {
     }
 
     public void addBullet(Bullet bullet){
-        this.bullet = bullet;
+        this.bullets.add(bullet);
     }
 
 }
