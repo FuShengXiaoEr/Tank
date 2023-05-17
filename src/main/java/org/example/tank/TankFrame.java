@@ -18,11 +18,9 @@ public class TankFrame extends Frame {
 //    private int x = 100 ,y = 100; 因此这里就不要直接定义坦克的位置了，因为抽离除了坦克这个对象
 //    private static int SPEED = 5; 这也是坦克的属性
     private PlayTank myTank;
-    private List<Tank> enemy;
     public static int GAME_WIDTH = 800;
     public static int GAME_HEIGHT = 600;
-    private List<Bullet> bullets;
-    public List<Explode> explodes = new ArrayList<>();
+    List<AbstractGameObject> objects = new ArrayList<>();
 
     public TankFrame(){
         super("tank war");
@@ -43,15 +41,12 @@ public class TankFrame extends Frame {
     private void initGameObjects() {
         // 初始化一辆坦克,这里不定义坦克的属性，是因为绘制坦克是坦克自己的行为
         myTank = new PlayTank(100,100,Dir.R,Group.Good,this);
-        // NPC敌人坦克
-//        enemy = new Tank(200,200,Dir.D,Group.Bad,this);
-        enemy = new ArrayList<>();
-        bullets = new ArrayList<>();
-        explodes = new ArrayList<>();
+        objects = new ArrayList<>();
         int tankCount = Integer.parseInt(PropertyMgr.get("initTankCount"));
         for (int i = 0; i < tankCount; i++) {
-            enemy.add(new Tank(100+50*i,200,Dir.D,Group.Bad,this));
+            objects.add(new Tank(100+50*i,200,Dir.D,Group.Bad,this));
         }
+        this.add(new Wall(300,500,50,20));
     }
 
 
@@ -89,15 +84,19 @@ public class TankFrame extends Frame {
     public void paint(Graphics g) {
         Color c = g.getColor();
         g.setColor(Color.WHITE);
-        g.drawString("bllutes:"+bullets.size(),10,60);
-        g.drawString("enemies:"+enemy.size(),10,80);
+//        g.drawString("bllutes:"+bullets.size(),10,60);
+//        g.drawString("enemies:"+enemy.size(),10,80);
         g.setColor(c);
 //        // 绘制方块
 //       g.fillRect(x,y,50,50);
        // 坦克自己决定自己的模样
         myTank.paint(g);
 
-        for (int i = 0; i < enemy.size(); i++) {
+        for (int i = 0; i < objects.size(); i++) {
+            objects.get(i).paint(g );
+        }
+
+/*        for (int i = 0; i < enemy.size(); i++) {
             if (!enemy.get(i).isLive()) {
                 enemy.remove(i);
             }else {
@@ -121,11 +120,15 @@ public class TankFrame extends Frame {
             }else {
                 explodes.get(i).paint(g);
             }
-        }
+        }*/
     }
 
     public void add(Explode explode) {
-        this.explodes.add(explode);
+        this.objects.add(explode);
+    }
+
+    public void add(AbstractGameObject object) {
+        objects.add(object);
     }
 
 
@@ -149,7 +152,7 @@ public class TankFrame extends Frame {
     }
 
     public void addBullet(Bullet bullet){
-        this.bullets.add(bullet);
+        this.objects.add(bullet);
     }
 
 }

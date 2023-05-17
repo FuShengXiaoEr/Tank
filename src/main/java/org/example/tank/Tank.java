@@ -11,7 +11,7 @@ import java.util.Random;
  * Date 2023/5/12 20:28
  * Version 1.0
  **/
-public class Tank {
+public class Tank extends AbstractGameObject{
     // 坦克的初始坐标
     private int x;
     private int y;

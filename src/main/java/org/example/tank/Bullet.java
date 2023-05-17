@@ -9,7 +9,7 @@ import java.awt.*;
  * Date 2023/5/13 02:48
  * Version 1.0
  **/
-public class Bullet {
+public class Bullet extends AbstractGameObject{
     // 子弹的初始位置
     private int x, y;
     // 子弹的速度

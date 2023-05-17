@@ -12,7 +12,7 @@ import java.awt.event.KeyEvent;
  * Date 2023/5/12 20:28
  * Version 1.0
  **/
-public class PlayTank {
+public class PlayTank extends AbstractGameObject{
     // 坦克的初始坐标
     private int x;
     private int y;
