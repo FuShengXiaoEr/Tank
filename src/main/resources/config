@@ -1,3 +1,6 @@
 initTankCount = 5
 gameWidth = 600
 gameHeight = 480
+
+#tank fire stretegy
+tankFireStrategy= DefaultFireStrtate

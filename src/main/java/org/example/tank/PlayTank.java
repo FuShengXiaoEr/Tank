@@ -1,5 +1,7 @@
 package org.example.tank;
 
+import org.example.tank.strtegy.FireStrategy;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -25,6 +27,8 @@ public class PlayTank {
     // 区分是敌人还是主战坦克
     private Group group;
     private boolean live = true;
+    // 开枪策略
+    private FireStrategy fireStrategy;
 
     public boolean isLive() {
         return live;
@@ -44,9 +48,20 @@ public class PlayTank {
         return y;
     }
 
-    public PlayTank() {
-        this.x = 100;
-        this.y = 100;
+    public Dir getDir() {
+        return dir;
+    }
+
+    public void setDir(Dir dir) {
+        this.dir = dir;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public PlayTank(int x, int y, Dir dir, Group group, TankFrame tankFrame) {
@@ -55,6 +70,7 @@ public class PlayTank {
         this.dir = dir;
         this.group = group;
         this.tankFrame = tankFrame;
+        this.initFireStrategy();
     }
 
     /**
@@ -180,10 +196,19 @@ public class PlayTank {
         setMainDir();
     }
 
+    FireStrategy strategy = null;
+    public void initFireStrategy(){
+        String className = PropertyMgr.get("tankFireStrategy");
+        try {
+            Class clazz = Class.forName("org.example.tank.strtegy." + className);
+            strategy = (FireStrategy) clazz.getDeclaredConstructor().newInstance();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void fire() {
-        int bx = x + ResourceMgr.goodTankU.getWidth() / 2 - ResourceMgr.bulletU.getWidth() / 2;
-        int by = y + ResourceMgr.goodTankU.getHeight() / 2 - ResourceMgr.bulletU.getHeight() / 2;
-        tankFrame.addBullet(new Bullet(bx, by, dir, group,tankFrame));
+
+        strategy.fire(this,tankFrame);
     }
 
     public void die() {
