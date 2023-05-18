@@ -3,6 +3,7 @@ package org.example.tank.chainofresponsibility;
 import org.example.tank.AbstractGameObject;
 import org.example.tank.PropertyMgr;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
  * @description
  **/
 public class ColliderChain {
-    private List<Collider> colliders;
+    private List<Collider> colliders = new ArrayList<>();
 
     public ColliderChain() {
         initColliders();
