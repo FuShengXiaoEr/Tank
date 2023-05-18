@@ -10,12 +10,14 @@ import java.awt.*;
  **/
 public class Wall extends AbstractGameObject{
     private int x,y,w,h;
+    private Rectangle rectangle;
 
     public Wall(int x, int y, int w, int h) {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
+        rectangle =new Rectangle(x,y,w,h);
     }
 
     /**
@@ -30,5 +32,14 @@ public class Wall extends AbstractGameObject{
         g.setColor(Color.gray);
         g.fillRect(x,y,w,h);
         g.setColor(color);
+    }
+
+    @Override
+    public boolean isLive() {
+        return true;
+    }
+
+    public Rectangle getRect() {
+        return rectangle;
     }
 }

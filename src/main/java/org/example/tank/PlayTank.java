@@ -64,6 +64,7 @@ public class PlayTank extends AbstractGameObject{
         this.group = group;
     }
 
+
     public PlayTank(int x, int y, Dir dir, Group group, TankFrame tankFrame) {
         this.x = x;
         this.y = y;

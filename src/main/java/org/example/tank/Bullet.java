@@ -19,6 +19,7 @@ public class Bullet extends AbstractGameObject{
     // 区分是好子弹还是坏子弹
     private Group group;
     private TankFrame tf;
+    private Rectangle rectangle;
 
     // 子弹的移动速度
     private static int SPEED = 5;
@@ -39,6 +40,7 @@ public class Bullet extends AbstractGameObject{
         this.y = y;
         this.group = group;
         this.tf = tf;
+        rectangle = new Rectangle(x,y,ResourceMgr.bulletU.getWidth(), ResourceMgr.bulletU.getHeight());
     }
 
     /**
@@ -76,18 +78,19 @@ public class Bullet extends AbstractGameObject{
         if (this.group == tank.getGroup()) {
             return;
         }
-        Rectangle rect = new Rectangle(x, y, ResourceMgr.bulletU.getWidth(), ResourceMgr.bulletU.getHeight());
         Rectangle rectTank = new Rectangle(tank.getX(), tank.getY(), ResourceMgr.goodTankU.getWidth(), ResourceMgr.goodTankU.getHeight());
 
-        if (rect.intersects(rectTank)) {
+        if (rectangle.intersects(rectTank)) {
             die();
             tank.die();
-            tf.add(new Explode(x,y));
         }
-
     }
 
-    private void die() {
+    public Rectangle getRect(){
+        return rectangle;
+    }
+
+    public void die() {
         this.live = false;
     }
 
@@ -106,6 +109,8 @@ public class Bullet extends AbstractGameObject{
                 y += SPEED;
                 break;
         }
+        rectangle.x = x;
+        rectangle.y = y;
         boundCheck();
     }
 
@@ -137,4 +142,6 @@ public class Bullet extends AbstractGameObject{
     public void setGroup(Group group) {
         this.group = group;
     }
+
+
 }

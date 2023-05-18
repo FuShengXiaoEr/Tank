@@ -1,9 +1,15 @@
 package org.example.tank;
 
+import org.example.tank.chainofresponsibility.BulletTankCollider;
+import org.example.tank.chainofresponsibility.BulletWallCollider;
+import org.example.tank.chainofresponsibility.Collider;
+import org.example.tank.chainofresponsibility.ColliderChain;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,6 +27,7 @@ public class TankFrame extends Frame {
     public static int GAME_WIDTH = 800;
     public static int GAME_HEIGHT = 600;
     List<AbstractGameObject> objects = new ArrayList<>();
+    ColliderChain chain = new ColliderChain();
 
     public TankFrame(){
         super("tank war");
@@ -30,6 +37,8 @@ public class TankFrame extends Frame {
         this.addKeyListener(new TankKeyListener());
         initGameObjects();
     }
+
+
 
     /**
      *@Author XiZhuangBaoTu
@@ -46,7 +55,7 @@ public class TankFrame extends Frame {
         for (int i = 0; i < tankCount; i++) {
             objects.add(new Tank(100+50*i,200,Dir.D,Group.Bad,this));
         }
-        this.add(new Wall(300,500,50,20));
+        this.add(new Wall(100,100,400,20));
     }
 
 
@@ -93,7 +102,18 @@ public class TankFrame extends Frame {
         myTank.paint(g);
 
         for (int i = 0; i < objects.size(); i++) {
-            objects.get(i).paint(g );
+            if (!objects.get(i).isLive()) {
+                objects.remove(i);
+                break;
+            }
+            AbstractGameObject go = objects.get(i);
+            for (int j = 0; j < objects.size(); j++) {
+                AbstractGameObject go2 = objects.get(j);
+                chain.collide(objects.get(i),objects.get(j));
+            }
+            if (objects.get(i).isLive()) {
+                objects.get(i).paint(g);
+            }
         }
 
 /*        for (int i = 0; i < enemy.size(); i++) {

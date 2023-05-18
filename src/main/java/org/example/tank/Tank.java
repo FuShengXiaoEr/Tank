@@ -30,7 +30,15 @@ public class Tank extends AbstractGameObject{
     private int oldx, oldy;
     // 给坦克一个单独的高度
     private int width ,height;
+    private Rectangle rectangle;
 
+    public Rectangle getRectangle() {
+        return rectangle;
+    }
+
+    public void setRectangle(Rectangle rectangle) {
+        this.rectangle = rectangle;
+    }
 
     public boolean isLive() {
         return live;
@@ -70,6 +78,8 @@ public class Tank extends AbstractGameObject{
         this.oldy = y;
         this.width = ResourceMgr.goodTankU.getWidth();
         this.height = ResourceMgr.goodTankU.getHeight();
+
+        this.rectangle = new Rectangle(x,y,this.width,this.height);
     }
 
     /**
@@ -130,6 +140,10 @@ public class Tank extends AbstractGameObject{
         if (random.nextInt(100) > 90) {
             fire();
         }
+
+        // 每次移动的时候都记录下rectangle的位置，为了避免每次move的时候都去new Rectangle
+        rectangle.x = x;
+        rectangle.y = y;
     }
 
     private void boundCheck() {
@@ -138,7 +152,7 @@ public class Tank extends AbstractGameObject{
         }
     }
 
-    private void back() {
+    public void back() {
         this.x = oldx;
         this.y = oldy;
     }
@@ -166,5 +180,6 @@ public class Tank extends AbstractGameObject{
 
     public void die() {
         this.setLive(false);
+        tankFrame.add(new Explode(x,y));
     }
 }
