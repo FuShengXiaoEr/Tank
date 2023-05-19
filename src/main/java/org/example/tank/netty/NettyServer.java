@@ -27,8 +27,10 @@ public class NettyServer {
         b.channel(NioServerSocketChannel.class);
         // netty帮忙处理了accept的过程
         b.childHandler(new MyChildInitializer());
-        b.bind(8888).sync();
-
+        ChannelFuture sync = b.bind(8888).sync();
+        sync.channel().closeFuture().sync();
+        boosGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
     }
 }
 class MyChildInitializer extends ChannelInitializer<SocketChannel> {

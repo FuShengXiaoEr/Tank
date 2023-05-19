@@ -1,5 +1,13 @@
 package org.example.tank.netty;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -10,15 +18,41 @@ import java.net.Socket;
  * @description
  **/
 public class NettyClient {
-    public static void main(String[] args) throws IOException {
-        Socket s =new Socket("localhost",8888);
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-        bw.write("mashibing");
-        bw.flush();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        String str = reader.readLine();
-        System.out.printf(str);
-        bw.close();
+    public static void main(String[] args) throws IOException, InterruptedException {
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(workerGroup);
+        bootstrap.channel(NioSocketChannel.class);
+        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel socketChannel) throws Exception {
+                socketChannel.pipeline().addLast(new MyHandler());
+            }
+        });
+        ChannelFuture future = bootstrap.connect("localhost", 8888).sync();
+        // 阻塞，等待关闭
+        future.channel().closeFuture().sync();
+        System.out.println("go on");
+        workerGroup.shutdownGracefully();
+    }
 
+    static class MyHandler extends ChannelInboundHandlerAdapter {
+        @Override
+        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+            System.out.printf(msg.toString());
+        }
+
+        @Override
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+           cause.printStackTrace();
+           // 关闭连接
+           ctx.close();
+        }
+
+        @Override
+        public void channelActive(ChannelHandlerContext ctx) throws Exception {
+            ByteBuf buf = Unpooled.copiedBuffer("mashibing".getBytes());
+            ctx.writeAndFlush(buf);
+        }
     }
 }
