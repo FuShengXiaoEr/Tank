@@ -2,6 +2,7 @@ package org.example.tank;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Random;
  * Date 2023/5/12 20:28
  * Version 1.0
  **/
-public class Tank extends AbstractGameObject{
+public class Tank extends AbstractGameObject {
     // 坦克的初始坐标
     private int x;
     private int y;

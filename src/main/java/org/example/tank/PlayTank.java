@@ -4,6 +4,7 @@ import org.example.tank.strtegy.FireStrategy;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 
 /**
  * @ClassName Tank
@@ -12,7 +13,7 @@ import java.awt.event.KeyEvent;
  * Date 2023/5/12 20:28
  * Version 1.0
  **/
-public class PlayTank extends AbstractGameObject{
+public class PlayTank extends AbstractGameObject implements Serializable {
     // 坦克的初始坐标
     private int x;
     private int y;
