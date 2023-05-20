@@ -1,4 +1,4 @@
-package org.example.nettychatroom;
+package org.example.nettycodec;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.ReferenceCountUtil;
+import org.example.nettychatroom.ClientFrame;
 
 /**
  * @author XiZhuangBaoTu
@@ -18,7 +19,7 @@ import io.netty.util.ReferenceCountUtil;
 public class Client {
     private Channel channel = null;
     public  void connect() {
-        ClientFrame.INSTANCE.updateText("Client start……");
+        System.out.println("Client start……");
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         try {
@@ -28,14 +29,16 @@ public class Client {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     channel = socketChannel;
-                    socketChannel.pipeline().addLast(new MyHandler());
+                    socketChannel.pipeline()
+                            .addLast(new TaskMsgEncoder())
+                            .addLast(new MyHandler());
                 }
             });
             ChannelFuture future = bootstrap.connect("localhost", 8888).sync();
-            ClientFrame.INSTANCE.updateText("connect to server");
+            System.out.println("connect to server");
             // 阻塞，等待关闭
             future.channel().closeFuture().sync();
-            ClientFrame.INSTANCE.updateText("interrupt");
+            System.out.println("interrupt");
         } catch (Exception e) {
            e.printStackTrace();
         } finally {
@@ -77,5 +80,15 @@ public class Client {
             // 关闭连接
             ctx.close();
         }
+
+        @Override
+        public void channelActive(ChannelHandlerContext ctx) throws Exception {
+            ctx.writeAndFlush(new TaskMsg(5,8));
+        }
+    }
+
+    public static void main(String[] args) {
+        Client client = new Client();
+        client.connect();
     }
 }
